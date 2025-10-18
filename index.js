@@ -20,9 +20,10 @@ const port = process.env.PORT || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // 100 requests per IP
+  max: 100 // limit each IP
 });
 app.use(limiter);
 
@@ -59,17 +60,19 @@ app.get('/me', async (req, res) => {
     console.error('Error fetching cat fact:', error.message);
   }
 
-  // Corrected response (flattened JSON)
+  // ✅ Corrected JSON structure
   const response = {
-    email: MY_EMAIL,
-    name: MY_NAME,
-    stack: MY_STACK,
+    status: "success",
+    user: {
+      email: MY_EMAIL,
+      name: MY_NAME,
+      stack: MY_STACK
+    },
     timestamp: utcTimestamp,
     fact: catFact
   };
 
-  // Send JSON response with explicit Content-Type
-  res.setHeader('Content-Type', 'application/json');
+  // Send JSON response
   res.status(200).json(response);
 });
 
