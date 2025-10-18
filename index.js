@@ -40,39 +40,36 @@ if (!MY_EMAIL || !MY_NAME || !MY_STACK || !process.env.PORT) {
 // GET /me endpoint
 app.get('/me', async (req, res) => {
   console.log('Handling /me request...');
-  // Generate current timestamp in UTC in ISO 8601 format
+
+  // Generate current timestamp in UTC (ISO 8601)
   const utcTimestamp = new Date().toISOString();
-  
-  // Default cat fact for API failure
+
+  // Default cat fact (in case API fails)
   let catFact = 'Cats are mysterious creatures... (Fallback fact due to API issue)';
-  
-  // Fetch cat fact
+
+  // Fetch a random cat fact
   try {
     console.log('Fetching cat fact...');
     const catResponse = await axios.get('https://catfact.ninja/fact', {
       timeout: 5000
     });
-    
     catFact = catResponse.data.fact;
     console.log('Successfully fetched cat fact:', catFact);
   } catch (error) {
     console.error('Error fetching cat fact:', error.message);
   }
-  
-  // Build response
+
+  // Corrected response (flattened JSON)
   const response = {
-    status: 'success',
-    user: {
-      email: MY_EMAIL,
-      name: MY_NAME,
-      stack: MY_STACK
-    },
+    email: MY_EMAIL,
+    name: MY_NAME,
+    stack: MY_STACK,
     timestamp: utcTimestamp,
     fact: catFact
   };
-  
-  // Send JSON response
-  console.log('Sending response:', response);
+
+  // Send JSON response with explicit Content-Type
+  res.setHeader('Content-Type', 'application/json');
   res.status(200).json(response);
 });
 
